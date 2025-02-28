@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日祝福🎂</title>
+    <style>
+        :root {
+            --primary-color: #ff4081;
+            --secondary-color: #ffd54f;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            font-family: '微软雅黑', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .container {
+            position: relative;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.8em;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
+            margin: 0;
+            transform: rotate(-3deg);
+        }
+
+        .cake-container {
+            position: relative;
+            width: 250px;
+            margin: 0 auto;
+            perspective: 1000px;
+        }
+
+        .cake {
+            width: 100%;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
+            transform-style: preserve-3d;
+            animation: cakeFloat 3s ease-in-out infinite;
+        }
+
+        .candles {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+        }
+
+        .flame {
+            position: absolute;
+            width: 10px;
+            height: 20px;
+            background: linear-gradient(#ffd700, #ff4500);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flame 0.8s ease-in-out infinite alternate;
+        }
+
+        .message {
+            /* 修改此处，添加更强的渐变效果 */
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            padding: 25px;
+            margin: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 2;
+        }
+
+        .typing-text {
+            font-size: 1.2em;
+            color: #333;
+            min-height: 80px;
+        }
+
+        .hearts {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart {
+            position: absolute;
+            color: var(--primary-color);
+            animation: float 5s linear forwards;
+        }
+
+        .controls {
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            background: #f50057;
+        }
+
+        @keyframes cakeFloat {
+            0%,
+            100% {
+                transform: translateY(0) rotateX(5deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotateX(-5deg);
+            }
+        }
+
+        @keyframes flame {
+            0% {
+                transform: scale(1) skew(2deg);
+            }
+
+            100% {
+                transform: scale(1.1) skew(-2deg);
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) scale(0);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 生日快乐！🎂</h1>
+        </div>
+
+        <div class="cake-container">
+            <img src="https://img.icons8.com/color/480/000000/birthday-cake.png" class="cake" alt="生日蛋糕" />
+           
+        </div>
+
+        <div class="message">
+            <div class="typing-text" id="greeting"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="createHearts()">撒爱心 ❤️</button>
+            <button class="btn" onclick="toggleMusic()">播放音乐 🎵</button>
+        </div>
+    </div>
+
+    <div class="hearts" id="heartsContainer"></div>
+
+    <audio id="bgm" loop>
+        <source src="https://cdn.pixabay.com/audio/2023/03/27/audio_6e5d3d0c3f.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 祝福语列表
+        const greetings = [
+            "愿你永远保持灿烂的笑容",
+            "每一天都充满喜悦与美好",
+            "所有的梦想都能成真",
+            "收获满满的幸福与惊喜",
+            "保持热爱，奔赴下一场山海",
+            "永远被世界温柔以待 🌟"
+        ];
+
+        // 打字机效果
+        let currentGreeting = 0;
+        function typeWriter(text, index = 0) {
+            if (index < text.length) {
+                document.getElementById("greeting").innerHTML = text.substring(0, index + 1);
+                setTimeout(() => typeWriter(text, index + 1), 100);
+            } else {
+                setTimeout(nextGreeting, 2000);
+            }
+        }
+
+        function nextGreeting() {
+            currentGreeting = (currentGreeting + 1) % greetings.length;
+            typeWriter(greetings[currentGreeting]);
+        }
+
+        // 创建爱心动画
+        function createHearts() {
+            const container = document.getElementById("heartsContainer");
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement("div");
+                heart.innerHTML = "❤";
+                heart.className = "heart";
+                heart.style.left = Math.random() * 100 + "%";
+                heart.style.fontSize = Math.random() * 20 + 15 + "px";
+                heart.style.animationDuration = Math.random() * 3 + 2 + "s";
+                container.appendChild(heart);
+
+                heart.addEventListener("animationend", () => heart.remove());
+            }
+        }
+
+        // 音乐控制
+        const audio = document.getElementById("bgm");
+        let isPlaying = false;
+        function toggleMusic() {
+            isPlaying ? audio.pause() : audio.play();
+            isPlaying = !isPlaying;
+        }
+
+        // 自动开始第一个祝福语
+        typeWriter(greetings[0]);
+
+        // 触摸屏幕生成爱心
+        document.addEventListener("touchstart", createHearts);
+    </script>
+</body>
+
+</html>
